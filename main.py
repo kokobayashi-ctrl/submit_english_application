@@ -17,7 +17,54 @@ from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 import functions as ft
 import constants as ct
+# 20行目の後にAPIキー取得関数を追加
+import streamlit as st
+import os
+import time
+from time import sleep
+from pathlib import Path
+from streamlit.components.v1 import html
+from langchain.memory import ConversationSummaryBufferMemory
+from langchain.chains import ConversationChain
+from langchain.prompts import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    MessagesPlaceholder,
+)
+from langchain.schema import SystemMessage
+from openai import OpenAI
+from langchain_openai import ChatOpenAI
+from dotenv import load_dotenv
+import functions as ft
+import constants as ct
 
+# APIキー取得関数（Streamlit Cloud対応）
+def get_openai_api_key():
+    if hasattr(st, 'secrets') and 'OPENAI_API_KEY' in st.secrets:
+        return st.secrets['OPENAI_API_KEY']
+    elif 'OPENAI_API_KEY' in os.environ:
+        return os.environ['OPENAI_API_KEY']
+    else:
+        st.error("OpenAI API key not found.")
+        st.stop()
+
+# 各種設定
+load_dotenv()
+st.set_page_config(
+    page_title=ct.APP_NAME
+)
+
+# タイトル表示
+st.markdown(f"## {ct.APP_NAME}")
+
+# 初期処理
+if "messages" not in st.session_state:
+    # ...existing code...
+    
+    st.session_state.openai_obj = OpenAI(api_key=get_openai_api_key())
+    st.session_state.llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0.2)
+    
+    # ...existing code...
 
 # 各種設定
 load_dotenv()
